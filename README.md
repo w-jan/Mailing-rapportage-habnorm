@@ -7,4 +7,9 @@ Deze rapporten zelf worden momenteel nog in Access aangemaakt en zijn **geen** o
 **Deze repo legt uit hoe deze gebiedsrapporten met een gepersonaliseerd bericht via een google-account naar de terreinbeheerders kunnen verzonden worden.**  
 
 ## toevoegen van r script
-[r code](r_code/mailmerge_gmail.R)
+Dit genereert de mailing.  
+[r code](mailmerge_gmail.R)
+
+## toevoegen van markdown
+Hiermee wordt het gepersonaliseerde email-bericht opgesteld.  
+[markdown](mailmerge_Habnorm.Rmd)
