@@ -1,0 +1,112 @@
+Beste `r mdata$voornaam[i]`,
+
+Door een probleem bij de mailserver is het onzeker of deze mail wel verstuurd werd. Daarom is dit een tweede poging. Sorry voor het eventuele ongemak.
+
+Vriendelijke groeten,
+Jan
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+```{r inlezen_aanpassen_contactgebieden, eval=TRUE, message=FALSE, warning= FALSE}
+# Inlezen van contactgegevens en gebiedsinformatie 
+library(dplyr)
+mdata <- readr::read_csv2("mailing_habnorm_2018_Kruistabel.txt")
+
+# verbeteren veldnamen
+mdata <- mdata %>% janitor::clean_names()
+maxpdf <-ncol(mdata)-6
+pdfs <- as.vector(paste("pdf",1:maxpdf, sep=""))
+colnames(mdata)[7:(7+maxpdf-1)] <- pdfs
+
+# gebiedsnamen bepalen
+# i <- 106
+lijstgebiedsnamen <-""
+for (j in maxpdf:1){
+  veldnaam <- paste0("pdf",j)
+  if (!is.na(mdata[i,veldnaam])) {
+    gebiedsnaam <-substring(mdata[i,veldnaam] ,16, regexpr("_",mdata[i,veldnaam])-1 )
+    lijstgebiedsnamen <- c(lijstgebiedsnamen, gebiedsnaam)
+  }
+}
+
+lijstgebiedsnamen <- lijstgebiedsnamen [2:length(lijstgebiedsnamen)]
+aantal_gebieden <- length(lijstgebiedsnamen)
+# aantal_gebieden <- 1
+# if (aantal_gebieden > 3){
+#   groepgebiedsnaam <- "meerdere gebieden in uw beheerregio"
+# } else {
+#   if (aantal_gebieden == 3) {
+#     groepgebiedsnaam <- paste0(lijstgebiedsnamen[1], ", ", lijstgebiedsnamen[2], " en ", lijstgebiedsnamen[3])
+#   }
+# }
+library(memisc)  
+groepgebiedsnaam <-    cases(
+      aantal_gebieden > 3 -> "meerdere gebieden in uw beheerregio",
+      aantal_gebieden == 3 -> paste0(lijstgebiedsnamen[1], ", ", lijstgebiedsnamen[2], " en ", lijstgebiedsnamen[3]),
+      aantal_gebieden == 2 -> paste0(lijstgebiedsnamen[1], " en ", lijstgebiedsnamen[2]),
+      aantal_gebieden == 1 -> lijstgebiedsnamen[1]
+      )
+verwijzing_gebied<-    cases(
+      aantal_gebieden > 3 -> "een aantal gebieden in uw regio (zie lijst verderop)",
+      aantal_gebieden <= 3 & aantal_gebieden > 1 -> "bovenvermelde gebieden",
+      # aantal_gebieden == 2 -> paste0(lijstgebiedsnamen[1], " en ", lijstgebiedsnamen[2]),
+      aantal_gebieden == 1 -> "bovenvermeld gebied"
+      )
+
+opsomming_gebieden <-""
+if (aantal_gebieden > 3){
+
+  for (k in 1:aantal_gebieden) {
+      opsomming_gebieden <- paste0(opsomming_gebieden,  lijstgebiedsnamen[k],", " )
+    }
+  opsomming_gebieden <- paste("Lijst gebieden:", substring(opsomming_gebieden,1, nchar(opsomming_gebieden)-2))
+}
+
+```
+Brussel, `r lubridate::today()`
+
+**Onderzoek milieucondities habitattypen - rapportage van ruwe data voor `r groepgebiedsnaam`** 
+
+Beste `r mdata$voornaam[i]`,
+
+In 2012 startte het Instituut voor Natuur- en Bosonderzoek (INBO) het project 'Onderzoek naar de hydrologische en bodemkundige standplaatsfactoren van graslanden, heiden en moerassen in Vlaanderen' - kortweg 'standplaatsonderzoek, dat in 2015 een vervolg kreeg in het project HabNorm. Dit project heeft als doel om tegen 2020 voor de Europees beschermde habitattypen voldoende data te verzamelen zodat hiermee milieukwaliteitsnormen kunnen opgesteld worden. Eerder hebben wij u, als beheerder, en/of uw consulent of regiobeheerder, gecontacteerd met de vraag of we voor dit project op een of meerdere locaties in `r verwijzing_gebied` een proefvlak mochten opmeten en bemonsteren. We willen jullie hiervoor bedanken.
+
+Op elke locatie werd:
+
+* een vegetatieopname gemaakt volgens Londo-schaal in een proefvlak van 3 x 3 m^2;
+* een bodem(meng)staal genomen in hetzelfde 3 x 3 m^2 proefvlak op 0-10 cm diepte (tot 2015 ook op 20-30 cm);
+
+De 0-10 cm laag werd geanalyseerd op:
+
+  * textuur
+  * organische stofgehalte
+  * zuurtegraad
+  * voedingsstoffen (totale en plantbeschikbare hoeveelheden)
+  * kationuitwisselingscapaciteit (CEC) en basenverzadiging
+  * totaal gehalten mineralen en metalen
+
+De 20-30cm laag werd bewaard en kan in een later stadium dienen om bepaalde bodemprocessen verder te verklaren;
+
+Op een beperkt aantal locaties werd een diepere boring tot 1m uitgevoerd. Het bodemprofiel werd beschreven en van elke profiellaag een staal voor een lichtjes aangepaste bodemanalyse (bijv. ook densiteit) verzameld.
+
+Indien er op of nabij de locatie een peilbuis aanwezig was, werd eveneens:
+
+* een grondwaterwaterstaal genomen voor de bepaling van de zuurtegraad, de elektrische geleidbaarheid, macro-ionen, voedingsstoffen (N, P) en metalen (Fe, Al);
+
+* de tijdreeks van grondwaterpeilen, indien voldoende stabiel in de tijd en voldoende lang en frequent gemeten, verwerkt tot     kengetallen (zgn. GXG-waarden: de gemiddelde hoogste, laagste en voorjaarswaterstand, de gemiddelde waterstand en de amplitude).
+
+
+Ondertussen werden de bodem- en grondwaterstalen geanalyseerd door het INBO-labo, en werden de verzamelde gegevens ingevoerd in de verschillende INBO-databanken. In bijgevoegd rapport hebben we alle (ruwe) meetgegevens die we tot 2017 in het kader van dit project verzamelden gebundeld.
+
+Momenteel zijn we bezig met de systematische verwerking en analyse van de beschikbare gegevens. Van zodra de verwerking afgerond is, en de resultaten geduid en gerapporteerd zijn, mag u van ons een samenvattend rapport verwachten.
+
+In tussentijd zijn we steeds bereid tot het geven van meer toelichtingen.
+
+Met vriendelijke groeten,
+
+
+Jan Wouters  
+en alle staalnemers: Maud, Cecile, Nathalie, Bruno, Dries, Robin, Koen, Mathieu, Sam, Patrik, Remar, Indra, Wouter, Bart, Peter, Luc, Piet  
+*.`r opsomming_gebieden`*
